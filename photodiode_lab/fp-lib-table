@@ -1,0 +1,1 @@
+(fp_lib_table (version 7) (lib (name "Lab") (type "KiCad") (uri "${KIPRJMOD}/libraries/Lab.pretty") (options "") (descr "Photodiode lab footprints")) (lib (name "Shared") (type "KiCad") (uri "${KIPRJMOD}/../shared/ESP32-C3-SuperMini.pretty") (options "") (descr "Shared ESP32-C3 SuperMini footprint")))

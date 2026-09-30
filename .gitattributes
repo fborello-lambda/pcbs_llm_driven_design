@@ -1,0 +1,28 @@
+# Normalize source and documentation files across operating systems.
+* text=auto eol=lf
+
+*.kicad_dru text eol=lf
+*.kicad_mod text eol=lf
+*.kicad_pcb text eol=lf
+*.kicad_pro text eol=lf
+*.kicad_sch text eol=lf
+*.kicad_sym text eol=lf
+# Preserve vendor Eagle source content without treating its intentional
+# trailing spaces as repository whitespace errors.
+*.brd text eol=lf -whitespace
+*.csv text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.svg text eol=lf
+*.txt text eol=lf
+*.wrl text eol=lf
+
+# Mechanical models and reference media are binary and should not be diffed.
+*.step binary
+*.stp binary
+*.STEP binary
+*.STP binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.pdf binary

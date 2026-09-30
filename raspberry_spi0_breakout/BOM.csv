@@ -1,0 +1,3 @@
+Reference,Value,Footprint,Notes
+J1,Raspberry Pi GPIO extender (2x20),Breakout:T_Cobbler_2x20_P2.54_W15.24,Receiving footprint for a 40-pin T-Cobbler-style extender; verify 15.24 mm row spacing before fabrication.
+J2,SPI0 OUTPUT,Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical,"Top-to-bottom SPI0 output: MOSI, MISO, SCLK, CE0, GND."

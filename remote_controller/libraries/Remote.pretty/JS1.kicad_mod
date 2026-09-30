@@ -1,0 +1,229 @@
+(footprint "JS1"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Adafruit official JOYSTICK_ANALOG_MINITHM; six terminals, no switch")
+	(property "Reference" "JS1"
+		(at 0 12 0)
+		(layer "F.SilkS")
+		(uuid "1382cfc8-f714-4dda-bd10-1f8304a4f3bf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "2765 / 2x10k"
+		(at 0 14 0)
+		(layer "F.Fab")
+		(uuid "ff71b7b1-02f4-428f-b423-9bb0b542f96b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9d38d0f4-a6c7-4153-8451-8e331e3f39df")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "799047ad-b0b5-4fac-bdf1-bcef7f2a9ab8")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_circle
+		(center 0 0)
+		(end 7 0)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "757305e7-885a-43e3-a3eb-932a40455655")
+	)
+	(fp_rect
+		(start -9.5 -11)
+		(end 11 9.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "d81fe8d2-147e-4184-a6e0-89ffcdeac737")
+	)
+	(fp_line
+		(start -9 -6)
+		(end -6 -9)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f04f7e15-e6c2-41d5-8abb-c59b86387d9b")
+	)
+	(fp_line
+		(start -9 6)
+		(end -9 -6)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0514b487-23f4-402a-8692-838fb37ba87f")
+	)
+	(fp_line
+		(start -6 -9)
+		(end 6 -9)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "51883176-29e2-46a8-91c2-557b5a97cf8c")
+	)
+	(fp_line
+		(start -6 9)
+		(end -9 6)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c27f1752-f245-4666-9ade-da5107e3c0b4")
+	)
+	(fp_line
+		(start 6 -9)
+		(end 9 -6)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "31553327-30a2-4146-a188-7bb1b09c2c60")
+	)
+	(fp_line
+		(start 6 9)
+		(end -6 9)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "d87eb949-c764-4ad6-9aba-a5284e8e45b4")
+	)
+	(fp_line
+		(start 9 -6)
+		(end 9 6)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a669f175-0ced-4c2d-aab3-31cadd238c87")
+	)
+	(fp_line
+		(start 9 6)
+		(end 6 9)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "7f557527-39be-46e9-a7e6-933fb06c9796")
+	)
+	(pad "" np_thru_hole circle
+		(at -6 -6)
+		(size 1.6 1.6)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(uuid "6b6fdefb-18d9-4d7f-b376-851f4de8dee6")
+	)
+	(pad "" np_thru_hole circle
+		(at 6 6)
+		(size 1.6 1.6)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(uuid "839d0b51-dc7d-46b8-bb2a-499b14d5d12f")
+	)
+	(pad "X" thru_hole oval
+		(at 0 -9)
+		(size 1.5 3)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "857414c9-6f80-4ca4-a590-e9287db88148")
+	)
+	(pad "X+" thru_hole oval
+		(at 2 -9)
+		(size 1.5 3)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3e182a23-c433-43b3-9af2-6c85cb14a724")
+	)
+	(pad "X-" thru_hole oval
+		(at -2 -9)
+		(size 1.5 3)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "8729b473-2482-43fd-b30a-447f0b3f2c3b")
+	)
+	(pad "Y" thru_hole oval
+		(at 9 0)
+		(size 3 1.5)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a50dbba8-e773-47f0-bf67-d4fd9c963523")
+	)
+	(pad "Y+" thru_hole oval
+		(at 9 -2)
+		(size 3 1.5)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "d6188854-f040-4d8f-aa76-0e26a7987dd3")
+	)
+	(pad "Y-" thru_hole oval
+		(at 9 2)
+		(size 3 1.5)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "c8c45acf-4e7c-4386-8218-01a12c743fc8")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/libraries/3d/joystick-envelope.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

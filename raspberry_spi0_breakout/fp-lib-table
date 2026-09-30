@@ -1,0 +1,1 @@
+(fp_lib_table (version 7) (lib (name "Breakout") (type "KiCad") (uri "${KIPRJMOD}/libraries/Breakout.pretty") (options "") (descr "T-Cobbler receiving footprint")))

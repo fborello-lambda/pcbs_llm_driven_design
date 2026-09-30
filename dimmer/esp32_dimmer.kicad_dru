@@ -1,0 +1,7 @@
+(version 1)
+(rule "MAINS-to-SELV barrier 8mm"
+ (condition "(A.NetClass == 'MAINS' && B.NetClass == 'SELV') || (A.NetClass == 'SELV' && B.NetClass == 'MAINS')")
+ (constraint clearance (min 8mm)))
+(rule "MAINS copper clearance 0.8mm"
+ (condition "A.NetClass == 'MAINS' && B.NetClass == 'MAINS'")
+ (constraint clearance (min 0.8mm)))

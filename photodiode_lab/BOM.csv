@@ -1,0 +1,23 @@
+Reference,Value,Footprint,Notes
+U1,ESP32-C3 SuperMini,Shared:ESP32-C3-SuperMini,Shared direct-solder landing pattern. USB at top edge; antenna keepout x70..90 y24.7..38. GPIO0 ADC1.
+U2,MCP6002-I/P,Package_DIP:DIP-8_W7.62mm_Socket,"DIP8: A=transimpedance; B=reference buffer. 1 MHz, RRIO, 1.8-6V supply."
+D1,BPW34,Lab:BPW34_Vishay,Vishay drawing 96 12186: 5.1mm pitch. Pad1 cathode to SUM (right); pad2 anode to GND (left). More light raises VOUT.
+RF1,100k 1%,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,"Standard soldered axial resistor, 10.16mm pitch. Start at 100k; any later variable-resistance arrangement is user-defined."
+CF1,1n C0G,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,Fixed feedback compensation. For low-speed teaching; 159Hz at RF=1M.
+R1,10k 1%,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+R2,10k 1%,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+C1,100n,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,
+C2,100n,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,Local supply bypass next to U2 pin8; THT ceramic.
+C3,10u / 10V,Capacitor_THT:CP_Radial_D5.0mm_P2.00mm,
+R3,10k 1%,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,ADC divider top; protect useful ADC range even if VOUT saturates high.
+R4,22k 1%,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+C4,100n,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,
+TP1,VOUT,TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm,Accessible multimeter/scope point. Do not probe the sensitive SUM node.
+TP2,VREF,TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm,Accessible multimeter/scope point. Do not probe the sensitive SUM node.
+TP3,ADC_OUT,TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm,Accessible multimeter/scope point. Do not probe the sensitive SUM node.
+TP4,GND,TestPoint:TestPoint_Loop_D2.50mm_Drill1.0mm,Accessible multimeter/scope point. Do not probe the sensitive SUM node.
+JP1,PRACTICE ENABLE,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,Normally open. Fit a shunt only after checking the practice circuit; remove during TIA measurements.
+R5,1k,Resistor_SMD:R_1206_3216Metric,Optional soldering practice. R5 limits LED current; R6/R7 are zero-ohm assembly exercises.
+R6,0R,Resistor_SMD:R_0805_2012Metric,Optional soldering practice. R5 limits LED current; R6/R7 are zero-ohm assembly exercises.
+R7,0R,Resistor_SMD:R_0603_1608Metric,Optional soldering practice. R5 limits LED current; R6/R7 are zero-ohm assembly exercises.
+D2,RED,LED_SMD:LED_0805_2012Metric,Optional red LED. Cathode K on the right. About 1-2mA with 3.3V and R5=1k; no firmware required.

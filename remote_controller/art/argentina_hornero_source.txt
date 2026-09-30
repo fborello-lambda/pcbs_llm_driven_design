@@ -1,0 +1,24 @@
+SOURCE AND LICENSE FOR argentina_hornero.svg
+
+Reference photograph:
+"Rufous hornero (Red ovenbird)(Furnarius rufus) and nest.JPG"
+Photographer: Charles J. Sharp (Wikimedia Commons username Charlesjsharp)
+Date photographed: 15 September 2015
+Description: Rufous hornero (Furnarius rufus commersoni) building a mud nest in the Pantanal, Brazil.
+
+Source page:
+https://commons.wikimedia.org/wiki/File:Rufous_hornero_(Red_ovenbird)(Furnarius_rufus)_and_nest.JPG
+
+Direct 1920 px preview used for visual study:
+https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Rufous_hornero_%28Red_ovenbird%29%28Furnarius_rufus%29_and_nest.JPG/1920px-Rufous_hornero_%28Red_ovenbird%29%28Furnarius_rufus%29_and_nest.JPG
+
+License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+License URL: https://creativecommons.org/licenses/by-sa/4.0/
+
+Derivative notice:
+argentina_hornero.svg is a simplified monochrome vector interpretation created from the photograph for PCB silkscreen use. The composition was cropped and redrawn, details were selectively omitted, and the nest texture was simplified. This derivative is offered under CC BY-SA 4.0 as required by the source license.
+
+Attribution line:
+Based on “Rufous hornero (Red ovenbird)(Furnarius rufus) and nest.JPG” by Charles J. Sharp, modified, CC BY-SA 4.0.
+
+The same adapted illustration is reproduced on the PCB B.Silkscreen layer by back_art.py. Preserve this attribution when redistributing the drawing and its reproductions.

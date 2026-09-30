@@ -1,0 +1,20 @@
+Reference,Value,Footprint,Notes
+U1,ESP32-C3 SuperMini,Shared:ESP32-C3-SuperMini,USB faces outward through the left PCB edge; the complete module stays within the outline. GPIO0/1=ADC1; GPIO2/8/9 unused. Direct-solder module to the shared SMD landing pattern; no socket strips.
+JS1,2765 / 2x10k,Remote:Adafruit_2765_Mini_Thumbstick,"Direct-solder 2765. Official six-pad footprint, 0.9mm drills and 1.6mm locating holes; no push switch. Breakout 3246 not required."
+SW2,ON / SELECT,Button_Switch_THT:SW_PUSH_6mm,
+SW3,OFF / BACK,Button_Switch_THT:SW_PUSH_6mm,
+SW4,PRESET,Button_Switch_THT:SW_PUSH_6mm,
+BT1,18650,Battery:BatteryHolder_MPD_BK-18650-PC2,"Exact MPD BK-18650-PC2 vertically on rear, elevated 1.5mm over 0.8mm PCB. 72.9mm terminal pitch; adhesive-backed insulating spacer, no holder screw holes. Verify cell length; external charging only."
+SW1,BATTERY POWER,Button_Switch_THT:SW_Slide_SPDT_Straight_CK_OS102011MS2Q,"Pin2 common, pin3 OFF. Battery OFF and bypass removed before USB."
+JP1,SWITCH BYPASS,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,Normally open. Remove for USB.
+C1,220u / 10V,Capacitor_THT:CP_Radial_D6.3mm_P2.50mm,"Front top-left corner, clear of OLED and joystick."
+J1,OLED / V G C D,Remote:OLED_MC096VW_Socket,"Front view: VCC,GND,SCL,SDA left-to-right, header at TOP. LCDWiki MC096VW 27.3x27.8mm. Female socket on carrier front; OLED male pins point backwards. Verify actual module before assembly."
+R1,100k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+R2,100k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+C2,100n,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,
+R3,10k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,ADC full-scale 3.3*22/32=2.27V. Calibrate endpoints/center in firmware.
+R4,22k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,ADC full-scale 3.3*22/32=2.27V. Calibrate endpoints/center in firmware.
+R5,10k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,ADC full-scale 3.3*22/32=2.27V. Calibrate endpoints/center in firmware.
+R6,22k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,ADC full-scale 3.3*22/32=2.27V. Calibrate endpoints/center in firmware.
+C3,100n,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,
+C4,100n,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,

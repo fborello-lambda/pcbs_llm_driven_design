@@ -1,0 +1,26 @@
+Reference,Value,Footprint,Notes
+U1,ESP32-C3 SuperMini,Shared:ESP32-C3-SuperMini,External 3.3 V supply for the ESP32. GPIO5 is unused; no relay or auxiliary supply. Shared direct-solder footprint.
+J1,I2C CONTROL / 3V3,Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical,"JST XH 2.50 mm: 1=3V3 input, 2=GND, 3=SDA, 4=SCL. Regulated SELV supply >=1 A; available capacity must be confirmed."
+JP1,RUN / OPEN FOR USB,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,Fit shunt for normal use. Remove shunt and disconnect J1 before USB flashing.
+R3,82R / 0.25W,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,MOC3052 LED: approximately 19 to 25 mA nominal; driven by a transistor.
+U2,MOC3052M,Package_DIP:DIP-6_W10.16mm,600 V random-phase optotriac. Do not substitute MOC306x/MOC304x. Leads formed to 10.16 mm.
+Q1,BC547,Package_TO_SOT_THT:TO-92_Inline_Wide,C-B-E according to the selected manufacturer; verify purchased part pinout.
+R4,1k / 0.25W,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+R5,10k / 0.25W,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,Keeps the transistor off during reset.
+U3,H11AA1,Package_DIP:DIP-6_W10.16mm,Isolated AC zero-crossing detector. Leads formed to 10.16 mm; no socket.
+R7,47k / 1W / 5%,Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P20.32mm_Horizontal,"Same large DIN0414 footprint as R12: 11.9 x 4.5 mm body, 20.32 mm pitch. Flameproof metal-oxide, >=250 V, pulse-capable; 0.328 W maximum. Verify the actual part."
+R8,47k / 1W / 5%,Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P20.32mm_Horizontal,"Same large DIN0414 footprint as R12: 11.9 x 4.5 mm body, 20.32 mm pitch. R7+R8=94k total; 0.328 W maximum each."
+J2,MAINS 220 Vac,TerminalBlock_Wuerth:Wuerth_691311400102_P7.62mm,"7.62 mm terminal block, >=300 Vac / 16 A, 1.5 mm2 cable; L and N."
+F1,T6.3AH / 250V,Dimmer:Fuseholder_Conquer_CQ-200S_P23.50mm,"CICEM Conquer CQ-200S fuse holder: 6.3 A/250 V, 23.5 mm pitch, 1.8 mm blade; 2.2 mm finished drill selected with clearance. Verify sample against cq200xx.pdf. 5x20 time-delay ceramic HBC fuse; validate inrush/I2t. No verified STEP."
+RV1,S14K275 / 275Vac,Varistor:RV_Disc_D15.5mm_W5mm_P7.5mm,275 Vac MOV beside F1 to minimize the protected-line surge loop. Surge coordination with the 600 V optotriac must be validated.
+R11,220R / 1W pulse,Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P20.32mm_Horizontal,"Pulse-capable resistor, >=250 V working voltage."
+R12,220R / 1W pulse,Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P20.32mm_Horizontal,440 ohm nominal; approximately 0.82 A peak at 242 Vac with -5% resistors. Validate repetitive pulses.
+R13,330R / 0.5W,Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal,Gate-to-MT1 resistor.
+Q2,BTA16-800BW,Dimmer:TO-220-3_Vertical,"Snubberless BTA16. Heatsink <=4 C/W, thermal interface <=0.5 C/W. MT1=1, MT2=2, G=3. Insulated tab is not a PCB safety barrier."
+J3,1000 W LAMP OUTPUT,TerminalBlock_Wuerth:Wuerth_691311400102_P7.62mm,Triac-controlled L / direct N output. Functional off is not galvanic isolation. Connect reflector PE directly to external certified PE terminal.
+J2-J3 mating connectors,2 compatible WR-TBL 3114 7.62 mm cable connectors,EXTERNAL,Required; headers alone do not connect a cable.
+HS1,Heatsink <=4 C/W,EXTERNAL,Thermal interface <=0.5 C/W.
+F1 cartridge,T6.3AH/250V ceramic HBC,F1,Validate inrush.
+H1-H4,4 M3 screws and insulating spacers,NPTH 3.2 mm,
+PE,Certified protective-earth terminal,EXTERNAL,Directly to reflector PE; never logic GND.
+JP1 shunt,2.54 mm shunt,JP1,Remove and disconnect J1 for USB flashing.

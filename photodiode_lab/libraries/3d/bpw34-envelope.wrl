@@ -1,0 +1,4 @@
+#VRML V2.0 utf8
+# Approximate visual envelope, not manufacturer CAD.
+Transform { translation 1.0039370078740157 0.0 1.0236220472440944 children [ Shape { appearance Appearance { material Material { diffuseColor .25 .16 .12 } } geometry Box { size 2.125984251968504 1.6929133858267715 1.2598425196850394 } } ] }
+Transform { translation 1.0039370078740157 0.0 1.6653543307086616 children [ Shape { appearance Appearance { material Material { diffuseColor .03 .03 .04 } } geometry Box { size 1.1811023622047243 0.984251968503937 0.031496062992125984 } } ] }

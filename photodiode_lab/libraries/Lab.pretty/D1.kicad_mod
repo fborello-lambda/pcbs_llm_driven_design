@@ -1,0 +1,112 @@
+(footprint "D1"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "D1"
+		(at 2.55 -4 0)
+		(layer "F.SilkS")
+		(uuid "26d774ca-37a3-453e-8a3e-44328a1f9178")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "BPW34"
+		(at 2.55 2.6 0)
+		(layer "F.Fab")
+		(uuid "068239be-cae4-450f-9a49-19220e6f9257")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b4ca75e2-98f3-4986-a11c-1b6b0551af50")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e27d271e-7552-43b1-a44e-f227c0851c95")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_rect
+		(start -1.2 -2)
+		(end 6.3 2)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "00d742a2-1047-4cf4-baa5-c3053195d2ba")
+	)
+	(fp_rect
+		(start -1.7 -2.5)
+		(end 6.8 2.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "a644afa9-35d1-47ec-8a83-7af51c3e6183")
+	)
+	(fp_text user "K"
+		(at 0 -3.5 0)
+		(layer "F.SilkS")
+		(uuid "d92eadd6-0785-4837-bcb0-805dcfb19cb6")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.13)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 2 2)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "589063e4-0cd5-4218-bbe8-0198e3f8a914")
+	)
+	(pad "2" thru_hole circle
+		(at 5.1 0)
+		(size 2 2)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "27a81feb-1718-49ad-b891-d40d420a5ccc")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/libraries/3d/bpw34-envelope.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

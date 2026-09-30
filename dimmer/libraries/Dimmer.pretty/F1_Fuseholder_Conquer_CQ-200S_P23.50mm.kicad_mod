@@ -1,0 +1,136 @@
+(footprint "F1_Fuseholder_Conquer_CQ-200S_P23.50mm"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Conquer CQ-200S 5x20 fuseholder; manufacturer Fuse Blocks p78, cq200xx.pdf. Terminal span 23.5mm; blade width 1.8mm. Finished round drill 2.2mm is design allowance, check actual part. No locating peg; center hole in holder is not a PCB hole. No verified STEP available.")
+	(tags "Conquer CQ-200S 5x20 CICEM")
+	(property "Reference" "F1"
+		(at -3 -2 90)
+		(layer "F.SilkS")
+		(uuid "d04c5150-1603-45c8-953b-79aa4e8ad41e")
+		(effects
+			(font
+				(size 0.9 0.9)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "T6.3AH / 250V"
+		(at 11.75 4.5 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "900703e7-205e-4de0-91bb-2656a382b94d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "89a2bcf7-c5ad-470f-90fa-e29f2ad3c80c")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7654fc03-ca11-4cf7-910b-4aec24de0789")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -0.75 -3.5)
+		(end 24.25 -3.5)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "6004a0d3-e779-4e3b-9c17-8a25207a888e")
+	)
+	(fp_line
+		(start -0.75 3.5)
+		(end 24.25 3.5)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "e4b67e02-7a94-404f-9303-d5c6f7edbdb3")
+	)
+	(fp_rect
+		(start -2.2 -3.8)
+		(end 25.7 3.8)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "25515e76-74a1-439c-a36a-0041c14027d9")
+	)
+	(fp_rect
+		(start 0 -3.3)
+		(end 23.5 3.3)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "cf6e5087-d3b7-4951-b09a-f13d69a5f9d2")
+	)
+	(fp_rect
+		(start 0.75 -3.3)
+		(end 5.75 3.3)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "4b2e0f6e-3f41-4021-a548-9f060aafaf84")
+	)
+	(fp_rect
+		(start 17.75 -3.3)
+		(end 22.75 3.3)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "63462b68-7bdc-4ea7-8121-d08305dcb577")
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 3.4 3.4)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "ec9bd36d-29a1-4757-97d7-9afb9d83db38")
+	)
+	(pad "2" thru_hole circle
+		(at 23.5 0)
+		(size 3.4 3.4)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "30cab24f-c495-4ff1-9426-9472486c9f1c")
+	)
+	(embedded_fonts no)
+)

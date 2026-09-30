@@ -1,0 +1,19 @@
+{
+  "board": {
+    "design_settings": {
+      "rules": {
+        "min_clearance": 0.2,
+        "min_track_width": 0.2,
+        "min_copper_edge_clearance": 0.5,
+        "min_hole_clearance": 0.25,
+        "min_silk_clearance": 0.1,
+        "min_silk_text_height": 0.8,
+        "min_silk_text_thickness": 0.1
+      }
+    }
+  },
+  "meta": {
+    "filename": "raspberry_spi0_breakout.kicad_pro",
+    "version": 1
+  }
+}

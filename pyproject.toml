@@ -1,0 +1,9 @@
+[project]
+name = "esp32-c3-hardware-boards"
+version = "0.1.0"
+description = "Reproducible KiCad generators and checks for three ESP32-C3 boards"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+package = false
