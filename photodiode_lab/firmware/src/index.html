@@ -44,6 +44,7 @@
   .peak { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .inputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .inputs label { display: block; font-size: 13px; color: var(--muted); }
+  .inputs input.invalid { border-color: var(--bad); }
   .inputs input { width: 100%; padding: 8px; font-size: 16px; border-radius: 8px;
                   border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
   .tip { background: var(--bg); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
@@ -143,12 +144,22 @@
   const PARTS = { R1: 10, R2: 1, RF: 10, R3: 9.1, R4: 6.2, VDD: 3.3 };
   const HEADROOM = 0.05; // MCP6002 output stops about 50 mV below VDD
   const fmt = (x, d) => Number.isFinite(x) ? x.toFixed(d) : '–';
-  const fmtR = (ohm) => ohm >= 1e6 ? +(ohm / 1e6).toFixed(1) + 'M' : +(ohm / 1e3).toFixed(1) + 'k';
-  let last = null, peak = 0;
+  // Suggestions are printed in kΩ so they can be typed straight into the inputs.
+  const fmtR = (ohm) => +(ohm / 1e3).toFixed(1) + ' kΩ';
+  const MIN_PEAK = 0.1e-6; // ignore dark noise when looking for the brightest light
+  let last = null, peak = 0, peakClipped = false;
+
+  // Accepts "9.1", "9,1", "820k" or "1M"; returns kΩ (or volts for VDD), or NaN.
+  function parseValue(text) {
+    const m = String(text).trim().replace(',', '.').match(/^(\d*\.?\d+)\s*([kKmM]?)$/);
+    if (!m) return NaN;
+    const v = parseFloat(m[1]) * ({ m: 1000, M: 1000 }[m[2]] || 1);
+    return v > 0 ? v : NaN;
+  }
 
   function load() {
     let saved = {};
-    try { saved = JSON.parse(localStorage.getItem('parts') || '{}'); } catch (e) {}
+    try { saved = JSON.parse(localStorage.getItem('parts') || '{}') || {}; } catch (e) {}
     for (const k in PARTS) $(k).value = saved[k] ?? PARTS[k];
   }
   function save() {
@@ -158,7 +169,11 @@
   }
   function model() {
     const p = {};
-    for (const k in PARTS) { const v = parseFloat($(k).value); p[k] = v > 0 ? v : PARTS[k]; }
+    for (const k in PARTS) {
+      const v = parseValue($(k).value);
+      $(k).classList.toggle('invalid', !(v > 0));
+      p[k] = v > 0 ? v : PARTS[k];
+    }
     for (const k of ['R1', 'R2', 'RF', 'R3', 'R4']) p[k] *= 1000;
     p.vref = p.VDD * p.R2 / (p.R1 + p.R2);
     p.voutMax = p.VDD - HEADROOM;
@@ -205,12 +220,18 @@
     const d = bestDivider(kmax);
     const fit = d ? `R3 = ${fmtR(d.r3)}, R4 = ${fmtR(d.r4)}` : 'a smaller k';
     let advice;
-    if (clipsAdc) advice = `<b class="warn">Strong light will clip the ADC at ${p.db} dB.</b> Pick a higher attenuation, or change the divider to ${fit}.`;
-    else if (used < 0.75) advice = `Only ${fmt(used * 100, 0)} % of the window is used. Try a lower attenuation, or change the divider to ${fit} (k = ${fmt(d.k, 3)}).`;
+    const lost = clipsAdc ? (adcTop - p.fs) / (adcTop - adcDark) : 0;
+    const lower = p.db !== 0 ? 'Try a lower attenuation, or change' : 'Change';
+    if (lost > 0.05) advice = `<b class="bad">The brightest ${fmt(lost * 100, 0)} % of the light range clips at ${p.db} dB.</b> Pick a higher attenuation, or change the divider to ${fit}.`;
+    else if (clipsAdc) advice = `<b class="warn">Only the brightest ${fmt(lost * 100, 1)} % of the light range clips.</b> Acceptable; for no clipping, change the divider to ${fit}.`;
+    else if (used < 0.75) advice = `Only ${fmt(used * 100, 0)} % of the window is used. ${lower} the divider to ${fit} (k = ${fmt(d.k, 3)}).`;
     else advice = `<b class="ok">Good fit.</b> The light range fills most of the ${p.db} dB window.`;
     $('advice').innerHTML = advice;
 
-    $('rfsug').textContent = peak > 0 ? fmtR(e24Below(0.9 * (p.voutMax - p.vref) / peak)) : 'press Reset';
+    const rf = e24Below(0.9 * (p.voutMax - p.vref) / peak);
+    $('rfsug').textContent = peak < MIN_PEAK ? 'needs light'
+      : peakClipped ? 'clipped: fit a smaller RF1 first'
+      : rf < 1e3 ? 'below 1 kΩ' : fmtR(rf);
     if (!last) return;
 
     const vout = last.adc_mv / 1000 / p.k;
@@ -224,8 +245,8 @@
     $('darkmark').style.left = Math.min(99, adcDark / p.fs * 100) + '%';
     $('window').textContent = `${last.adc_mv} of ${last.range_mv} mV (${fmt(last.adc_mv / last.range_mv * 100, 0)} %)`;
 
-    const adcFull = last.raw >= 4090 || last.adc_mv >= 0.98 * last.range_mv;
-    const rail = vout >= p.VDD - 0.08;
+    const adcFull = isAdcFull(last);
+    const rail = isRail(last, p);
     const s = $('status');
     if (adcFull) { s.className = 'status bad'; s.textContent = 'Clipping: ADC at full scale. Use a higher attenuation.'; }
     else if (rail) { s.className = 'status bad'; s.textContent = 'Clipping: op-amp at 3.3 V. Use a smaller RF1.'; }
@@ -234,13 +255,18 @@
     for (const b of $('atten').children) b.classList.toggle('on', b.dataset.db === String(last.atten_db));
   }
 
+  const isAdcFull = (r) => r.raw >= 4090 || r.adc_mv >= 0.98 * r.range_mv;
+  const isRail = (r, p) => r.adc_mv / 1000 / p.k >= p.VDD - 0.08;
+  const isClipping = (r, p) => isAdcFull(r) || isRail(r, p);
+
   async function tick() {
     try {
       const r = await fetch('/data', { cache: 'no-store' });
       last = await r.json();
       const p = model();
       const iph = (last.adc_mv / 1000 / p.k - p.vref) / p.RF;
-      if (iph > peak) peak = iph;
+      if (iph >= MIN_PEAK && iph > peak) peak = iph;
+      if (iph >= MIN_PEAK && isClipping(last, p)) peakClipped = true;
       $('live').classList.remove('stale');
       render();
     } catch (e) {
@@ -254,7 +280,7 @@
     try { await fetch('/atten?db=' + b.dataset.db, { method: 'POST' }); } catch (e) {}
     b.disabled = false;
   };
-  $('resetpeak').onclick = () => { peak = 0; render(); };
+  $('resetpeak').onclick = () => { peak = 0; peakClipped = false; render(); };
   for (const k in PARTS) $(k).addEventListener('input', save);
   load(); render(); tick();
 </script>

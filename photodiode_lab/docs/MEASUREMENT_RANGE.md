@@ -67,7 +67,7 @@ With VREF = 0.30 V, the largest current before clipping is 2.95 V / RF1:
 | 100k | 30 µA | Normal room light |
 | 1M | 3 µA | Dim room |
 
-To choose by measurement: start with 10k, press **Reset** in the *Light* card, shine your brightest light, and read *RF1 for that light*. It uses formula 5 with 10 % margin.
+To choose by measurement: start with 10k, press **Reset** in the *Light* card, shine your brightest light, and read *RF1 for that light*. It uses formula 5 with 10 % margin. If the reading clipped, the page asks for a smaller RF1 first, because a clipped peak underestimates the light.
 
 ### Step 3: attenuation and R3/R4 (ADC fit)
 
@@ -82,11 +82,11 @@ Each attenuation has a window $V_{FS}$. Formula 4 gives the largest k; these E24
 
 Never wire VOUT straight to the ADC: 3.3 V is above every window.
 
-Once k fits the window, the smallest current step is about $3.25\ \text{V} / (4095 \cdot R_{F1})$ whatever the attenuation. So the attenuation only decides which divider you need; RF1 decides the resolution.
+When k is at its limit for the window, the smallest current step is about $3.25\ \text{V} / (4095 \cdot R_{F1})$ whatever the attenuation. So the attenuation only decides which divider you need; RF1 decides the resolution. With a smaller k the step is larger: the page shows the real value as *Smallest step*.
 
 ### Step 4: check on the page
 
-Enter your parts in *Parts on your board*. The card *Does it use the whole ADC?* shows how much of the window your light uses. Aim for 75 % or more and never see "Clipping".
+Enter your parts in *Parts on your board*, in kΩ (`9.1`, `9,1`, `820` or `1M` all work; a red box means the value was not understood). The card *Does it use the whole ADC?* shows how much of the window your light uses. Aim for 75 % or more and never see "Clipping".
 
 ## Example: the current board
 
@@ -102,6 +102,6 @@ R1 = 10k, R2 = 1k, RF1 = 10k, R3 = 9.1k, R4 = 6.2k, attenuation 12 dB.
 
 Only half the window is used. Three ways to improve it:
 
-1. **Press 6 dB.** No soldering. Uses about 90 %; only the brightest 2 % clips.
+1. **Press 6 dB.** No soldering. Uses about 90 %; only the brightest 1.4 % of the light range clips, and the page marks this as acceptable.
 2. **Fit R3 = 10k, R4 = 27k** and stay at 12 dB. Uses 86 %.
 3. **Fit RF1 = 100k** if you measure room light. Ten times finer steps; full scale becomes 30 µA.

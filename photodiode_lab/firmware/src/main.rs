@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use esp_idf_svc::eventloop::EspSystemEventLoop;
 use esp_idf_svc::hal::adc::attenuation::{self, adc_atten_t};
 use esp_idf_svc::hal::adc::oneshot::config::{AdcChannelConfig, Calibration};
@@ -69,7 +69,10 @@ fn main() -> Result<()> {
     )?;
     start_wifi(&mut wifi)?;
 
-    let latest = Arc::new(Mutex::new(Reading::default()));
+    let latest = Arc::new(Mutex::new(Reading {
+        atten: DEFAULT_ATTENUATION,
+        ..Default::default()
+    }));
     let requested = Arc::new(AtomicUsize::new(DEFAULT_ATTENUATION));
 
     let mut server = EspHttpServer::new(&HttpConfig {
@@ -93,7 +96,11 @@ fn main() -> Result<()> {
     // POST /atten?db=0|2.5|6|12 selects the attenuation for the next readings.
     let target = requested.clone();
     server.fn_handler("/atten", Method::Post, move |req| {
-        let db = req.uri().split("db=").nth(1).unwrap_or("");
+        let query = req.uri().split_once('?').map_or("", |(_, q)| q);
+        let db = query
+            .split('&')
+            .find_map(|kv| kv.strip_prefix("db="))
+            .unwrap_or("");
         match ATTENUATIONS.iter().position(|(_, name, _)| *name == db) {
             Some(i) => {
                 target.store(i, Ordering::Relaxed);
@@ -126,23 +133,31 @@ fn main() -> Result<()> {
         println!("attenuation {name} dB");
 
         while requested.load(Ordering::Relaxed) == atten {
-            let (mut sum, mut raw_min, mut raw_max) = (0u32, u16::MAX, 0u16);
-            for _ in 0..SAMPLES_PER_READING {
-                let sample = adc.read_raw(&mut pin)?;
-                sum += sample as u32;
-                raw_min = raw_min.min(sample);
-                raw_max = raw_max.max(sample);
-            }
-            let raw = ((sum + SAMPLES_PER_READING / 2) / SAMPLES_PER_READING) as u16;
-            let reading = Reading {
-                raw,
-                raw_min,
-                raw_max,
-                adc_mv: adc.raw_to_mv(&pin, raw)?,
-                atten,
+            // A failed conversion is logged and skipped so Wi-Fi and the page keep running.
+            let mut read = || -> Result<Reading> {
+                let (mut sum, mut raw_min, mut raw_max) = (0u32, u16::MAX, 0u16);
+                for _ in 0..SAMPLES_PER_READING {
+                    let sample = adc.read_raw(&mut pin)?;
+                    sum += sample as u32;
+                    raw_min = raw_min.min(sample);
+                    raw_max = raw_max.max(sample);
+                }
+                let raw = ((sum + SAMPLES_PER_READING / 2) / SAMPLES_PER_READING) as u16;
+                Ok(Reading {
+                    raw,
+                    raw_min,
+                    raw_max,
+                    adc_mv: adc.raw_to_mv(&pin, raw)?,
+                    atten,
+                })
             };
-            *latest.lock().unwrap() = reading;
-            println!("{}", to_json(reading));
+            match read() {
+                Ok(reading) => {
+                    *latest.lock().unwrap() = reading;
+                    println!("{}", to_json(reading));
+                }
+                Err(e) => println!("ADC read failed: {e}"),
+            }
             thread::sleep(READING_PERIOD);
         }
     }
@@ -161,8 +176,12 @@ fn start_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> Result<()> {
         (Some(ssid), pass) => {
             let pass = pass.unwrap_or("");
             wifi.set_configuration(&Configuration::Client(ClientConfiguration {
-                ssid: ssid.try_into().unwrap(),
-                password: pass.try_into().unwrap(),
+                ssid: ssid
+                    .try_into()
+                    .map_err(|_| anyhow!("WIFI_SSID is longer than 32 bytes"))?,
+                password: pass
+                    .try_into()
+                    .map_err(|_| anyhow!("WIFI_PASS is longer than 64 bytes"))?,
                 auth_method: if pass.is_empty() {
                     AuthMethod::None
                 } else {
@@ -182,6 +201,7 @@ fn start_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> Result<()> {
                 password: AP_PASS.try_into().unwrap(),
                 auth_method: AuthMethod::WPA2Personal,
                 channel: 6,
+                max_connections: 4,
                 ..Default::default()
             }))?;
             wifi.start()?;
