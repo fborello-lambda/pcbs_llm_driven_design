@@ -18,6 +18,8 @@ The front silkscreen integrates the functional A-channel TIA diagram with the ac
 
 Before output clipping, `VOUT = VREF + IPH × RF1`; this polarity follows from the cathode-at-SUM and anode-at-ground connection. The feedback pole is `fc ≈ 1/(2π × RF1 × CF1)`. The fitted values remain documented in the schematic and BOM, while the front silkscreen uses reference designators so it remains correct if either component changes.
 
+To choose R1/R2, RF1, R3/R4 and the ADC attenuation for a given light range, follow [docs/MEASUREMENT_RANGE.md](docs/MEASUREMENT_RANGE.md). The Rust firmware in [firmware/](firmware/README.md) serves a phone page with live readings, an attenuation selector and the same calculations.
+
 The feedback pole `1/(2πRF·1 nF)` is about 15.9 kHz, 1.59 kHz, and 159 Hz for those three settings. The 1 nF capacitor is intentionally much larger than the BPW34's tens-of-pF junction capacitance, giving a slow, stable teaching response.
 
 `ADC_OUT` is the divider midpoint: `VADC = VOUT × R4/(R3+R4)`, with R3 between VOUT and ADC and R4 between ADC and GND. The fitted values R3=10 kOhm and R4=22 kOhm give a factor of 0.6875. C4 forms a low-pass with R3 in parallel with R4: `fc ≈ 1/[2π × (R3 || R4) × C4]`, approximately 232 Hz with the fitted values. Recalculate ADC headroom and filtering if either resistor changes. Calibrate the ESP32 ADC and dark offset; the ADC voltage increases with light.
