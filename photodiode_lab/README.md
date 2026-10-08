@@ -1,6 +1,6 @@
 # Photodiode transimpedance lab — revision D
 
-[![3D preview](docs/board-3d.png)](docs/board-3d.png)
+<a href="docs/board-3d.png"><img src="docs/board-3d.png" alt="3D preview" height="320"></a> <a href="docs/photo.png"><img src="docs/photo.png" alt="Assembled board photo" height="320"></a>
 
 [KiCad project](photodiode_lab.kicad_pro) · [Schematic PDF](docs/schematic.pdf) · [BOM CSV](BOM.csv)
 
