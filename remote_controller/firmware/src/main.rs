@@ -130,7 +130,8 @@ where
     D: DrawTarget<Color = BinaryColor>,
     D::Error: core::fmt::Debug,
 {
-    let travel = (STICK_DIAMETER - DOT_DIAMETER) as f32 / 2.0;
+    // One pixel short of the ring so the dot never merges with it.
+    let travel = (STICK_DIAMETER - DOT_DIAMETER) as f32 / 2.0 - 1.0;
     Circle::with_center(STICK_CENTER, STICK_DIAMETER)
         .into_styled(PrimitiveStyle::with_stroke(BinaryColor::On, 1))
         .draw(d)
@@ -185,9 +186,9 @@ fn calibrate<DI: WriteOnlyDataCommand>(
         x_axis.extend(h);
         y_axis.extend(v);
         display.clear_buffer();
-        draw_lines(display, &["Circle the edges"], 58)?;
+        draw_lines(display, &["Circle the edges"], 57)?;
         let done = start.elapsed().as_secs_f32() / EDGE_TIME.as_secs_f32();
-        Rectangle::new(Point::new(0, 60), Size::new((128.0 * done) as u32, 4))
+        Rectangle::new(Point::new(0, 61), Size::new((128.0 * done) as u32, 3))
             .into_styled(PrimitiveStyle::with_fill(BinaryColor::On))
             .draw(display)
             .map_err(|e| anyhow!("{e:?}"))?;
