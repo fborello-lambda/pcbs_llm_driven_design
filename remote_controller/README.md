@@ -22,6 +22,8 @@ The holder footprint uses an intentionally elevated terminal courtyard. Install 
 
 The single 18650 is externally charged. The SuperMini has no charger and the remote has no charge circuit. Its ME6211 dropout voltage limits useful operation from an 18650 as the cell discharges, so validate low-voltage behaviour with the actual SuperMini. USB and battery are manually isolated: turn the battery switch OFF and leave JP1 open before connecting USB. This is an assembly procedure, not automatic protection; the onboard diode does not isolate a battery sharing USB VBUS. A protected cell must be charged externally with a suitable charger.
 
+Test firmware in Rust that draws the thumbstick position and button states on the OLED is in [`firmware/`](firmware/README.md).
+
 ## OLED and carrier
 
 The specified display is the 0.96-inch SSD1306 reference module LCDWiki MC096VW/MC096VX, approximately 27.3 x 27.8 mm. Mechanical references: [LCDWiki MC096VX](https://www.lcdwiki.com/0.96inch_OLED_Module_(IIC-4P_SKU:MC096VX)) and [MC096-015 drawing](https://www.lcdwiki.com/images/1/19/MC096-015.jpg). The detailed selection and assembly notes are in [`OLED_SELECTION.md`](OLED_SELECTION.md).

@@ -1,0 +1,6 @@
+# Rust often needs a bit of an extra main task stack size compared to C (the default is 3K)
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# GPIO20 and GPIO21 are buttons on this board, so keep the console off UART0
+# and print over the built-in USB serial port instead.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
