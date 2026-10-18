@@ -19,7 +19,7 @@ Schematics · routed PCBs · readable BOMs · 3D previews · reproducible fabric
 
 | Halogen dimmer | BLE remote controller | Photodiode TIA lab | Raspberry Pi SPI0 breakout |
 | --- | --- | --- | --- |
-| Photo pending | [![Assembled BLE remote controller](remote_controller/docs/photo.png)](remote_controller/docs/photo.png) | [![Assembled photodiode TIA lab](photodiode_lab/docs/photo.png)](photodiode_lab/docs/photo.png) | [![Assembled Raspberry Pi SPI0 breakout](raspberry_spi0_breakout/docs/photo.png)](raspberry_spi0_breakout/docs/photo.png) |
+| [![Assembled halogen dimmer](dimmer/docs/photo.png)](dimmer/docs/photo.png) | [![Assembled BLE remote controller](remote_controller/docs/photo.png)](remote_controller/docs/photo.png) | [![Assembled photodiode TIA lab](photodiode_lab/docs/photo.png)](photodiode_lab/docs/photo.png) | [![Assembled Raspberry Pi SPI0 breakout](raspberry_spi0_breakout/docs/photo.png)](raspberry_spi0_breakout/docs/photo.png) |
 
 ## Repository layout
 

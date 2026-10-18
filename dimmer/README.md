@@ -1,6 +1,6 @@
 # ESP32-C3 220 Vac halogen dimmer
 
-[![3D preview](docs/board-3d.png)](docs/board-3d.png)
+<a href="docs/board-3d.png"><img src="docs/board-3d.png" alt="3D preview" height="320"></a> <a href="docs/photo.png"><img src="docs/photo.png" alt="Assembled board photo" height="320"></a>
 
 Two-layer 100 x 100 mm phase-control dimmer for a nominal 220 Vac, 50 Hz, 1000 W halogen load. An external SELV 3.3 V I2C connection powers the ESP32-C3 SuperMini. A MOC3052M provides random-phase optical triggering, an H11AA1 detects zero crossings, and a BTA16-800BW switches the load.
 
@@ -13,6 +13,8 @@ Two-layer 100 x 100 mm phase-control dimmer for a nominal 220 Vac, 50 Hz, 1000 W
 - [Zero-cross calculations](docs/ZERO_CROSS_CALCULATION.md)
 - [Design calculations](docs/DESIGN_CALCULATIONS.md)
 - [Fabrication requirements](docs/PCB_FABRICATION.md)
+- [Firmware, bring-up and testing](firmware/README.md)
+- [Firmware debugging notes](firmware/DEBUGGING_NOTES.md)
 
 ## Safety
 

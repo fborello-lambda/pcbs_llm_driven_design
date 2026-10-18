@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dimmer</title>
+<style>
+  :root { --bg: #f6f6f4; --card: #fff; --fg: #1b1b1b; --muted: #6b6b6b; --line: #e2e2de;
+          --accent: #d97706; --bad: #b91c1c; --ok: #15803d; --track: #e8e8e4; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #121212; --card: #1d1d1d; --fg: #f0f0f0; --muted: #9a9a9a; --line: #2e2e2e;
+            --accent: #fbbf24; --bad: #f87171; --ok: #4ade80; --track: #2a2a2a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
+  body { margin: 0 auto; padding: 16px; max-width: 560px; background: var(--bg); color: var(--fg);
+         font-family: system-ui, -apple-system, sans-serif; line-height: 1.45; overflow-wrap: anywhere; }
+  h2 { font-size: 16px; margin: 0 0 10px; }
+  p { margin: 8px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+  .warn { border-color: var(--bad); }
+  .value { font-size: 48px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .unit { font-size: 20px; color: var(--muted); font-weight: 400; }
+  .small { color: var(--muted); font-size: 13px; }
+  .status { font-weight: 600; }
+  .ok { color: var(--ok); } .bad { color: var(--bad); } .mid { color: var(--accent); }
+  input[type=range] { width: 100%; margin: 14px 0; accent-color: var(--accent); }
+  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  button { padding: 10px 0; font-size: 15px; border-radius: 8px; cursor: pointer;
+           border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+  button.wide { width: 100%; }
+  .kv { display: grid; grid-template-columns: 1fr auto; gap: 0 12px; font-size: 15px; }
+  .kv > div { padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .kv > div:nth-child(even) { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  input[type=number] { width: 90px; padding: 6px; font-size: 16px; border-radius: 8px;
+                       border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+  .stale { opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<div class="card warn">
+  <p class="small"><b class="bad">Mains voltage.</b> This prototype is not certified. Operate it closed in its enclosure, from a fused, current-limited supply, and never touch the board while it is connected.</p>
+</div>
+
+<div id="live">
+  <div class="card">
+    <div class="status" id="mains">Waiting…</div>
+    <div class="value"><span id="level">–</span> <span class="unit">% power</span></div>
+    <input type="range" id="slider" min="0" max="100" step="1" value="0">
+    <div class="row">
+      <button data-p="0">Off</button><button data-p="25">25</button><button data-p="50">50</button>
+      <button data-p="75">75</button><button data-p="100">Full</button>
+    </div>
+    <p class="small">Firing only starts once the zero crossing is locked. The lamp is always off after a reset.</p>
+  </div>
+
+  <div class="card">
+    <h2>Measurements</h2>
+    <div class="kv">
+      <div>Mains frequency</div><div><span id="freq">–</span> Hz</div>
+      <div>ZC pulse width</div><div><span id="width">–</span> µs</div>
+      <div>Firing delay</div><div><span id="delay">–</span></div>
+      <div>Pulses fired / skipped</div><div><span id="fired">–</span> / <span id="skipped">–</span></div>
+    </div>
+    <h2 style="margin-top:14px">Zero-cross, last second</h2>
+    <div class="kv">
+      <div>Edges / pulses</div><div><span id="zedges">–</span> / <span id="zpulses">–</span></div>
+      <div>Noise / invalid / missed</div><div><span id="znoise">–</span> / <span id="zinvalid">–</span> / <span id="zmissed">–</span></div>
+      <div>Pulse width min–max</div><div><span id="zwidth">–</span> µs</div>
+      <div>Half-period min–max</div><div><span id="zhalf">–</span> µs</div>
+    </div>
+    <p class="small">At 50 Hz expect 200 edges, 100 pulses, 0 invalid, a width of tens of µs and a half-period near 10000 µs.</p>
+  </div>
+
+  <div class="card">
+    <h2>Check with a multimeter</h2>
+    <p>Measure the lamp voltage at J3 with a <b>true-RMS</b> meter rated CAT III 300 V or better. A cheaper averaging meter reads the chopped waveform wrong.</p>
+    <p>Mains at the input: <input type="number" id="vin" value="220" inputmode="decimal"> V</p>
+    <div class="kv">
+      <div>Expected lamp voltage</div><div><span id="vout">–</span> V RMS</div>
+    </div>
+    <p class="small">For a resistive lamp, V<sub>lamp</sub> = V<sub>in</sub> × √(power).</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Optocoupler LED test (mains disconnected)</h2>
+  <p>Turns FIRE on for 30 s. Measure the voltage across R3 (82 Ω): about 1.6–2.0 V means 20–25 mA through the MOC3052 LED. Refused while mains is detected.</p>
+  <button class="wide" id="opto">Start LED test</button>
+  <p class="small" id="optomsg"></p>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let dragging = false, sendTimer = null;
+
+  function send(p) {
+    clearTimeout(sendTimer);
+    sendTimer = setTimeout(() => fetch('/level?p=' + p, { method: 'POST' }).catch(() => {}), 120);
+  }
+
+  function render(s) {
+    const m = $('mains');
+    if (!s.mains) { m.className = 'status bad'; m.textContent = 'No mains detected: firing disabled'; }
+    else if (!s.locked) { m.className = 'status mid'; m.textContent = 'Mains detected, locking…'; }
+    else { m.className = 'status ok'; m.textContent = 'Locked to mains'; }
+    $('level').textContent = s.level;
+    if (!dragging) $('slider').value = s.level;
+    $('freq').textContent = s.mains ? s.freq_hz.toFixed(2) : '–';
+    $('width').textContent = s.mains ? s.zc_width_us : '–';
+    const half = s.freq_hz > 0 ? 500000 / s.freq_hz : 10000;
+    $('delay').textContent = s.level === 0 ? 'off' : s.level === 100 ? 'full on'
+      : s.delay_us ? `${(s.delay_us / 1000).toFixed(2)} ms (${(180 * s.delay_us / half).toFixed(0)}°)` : '–';
+    $('fired').textContent = s.fired;
+    if (s.zc) {
+      $('zedges').textContent = s.zc.edges; $('zpulses').textContent = s.zc.pulses;
+      $('znoise').textContent = s.zc.noise; $('zinvalid').textContent = s.zc.invalid; $('zmissed').textContent = s.zc.missed;
+      $('zwidth').textContent = s.zc.width_max ? `${s.zc.width_min}–${s.zc.width_max}` : '–';
+      $('zhalf').textContent = s.zc.half_max ? `${s.zc.half_min}–${s.zc.half_max}` : '–';
+    }
+    $('skipped').textContent = s.skipped;
+    const vin = parseFloat(String($('vin').value).replace(',', '.'));
+    $('vout').textContent = vin > 0 ? (vin * Math.sqrt(s.level / 100)).toFixed(0) : '–';
+    optoOn = s.opto_test;
+    $('opto').disabled = s.mains && !s.opto_test;
+    $('opto').textContent = s.opto_test ? 'Stop LED test (running…)' : 'Start LED test';
+  }
+
+  async function tick() {
+    try {
+      const r = await fetch('/status', { cache: 'no-store' });
+      render(await r.json());
+      $('live').classList.remove('stale');
+    } catch (e) {
+      $('live').classList.add('stale');
+    }
+    setTimeout(tick, 500);
+  }
+
+  const slider = $('slider');
+  slider.addEventListener('pointerdown', () => dragging = true);
+  slider.addEventListener('pointerup', () => dragging = false);
+  slider.addEventListener('input', () => { $('level').textContent = slider.value; send(slider.value); });
+  for (const b of document.querySelectorAll('[data-p]')) b.onclick = () => { slider.value = b.dataset.p; send(b.dataset.p); };
+  let optoOn = false;
+  $('opto').onclick = async () => {
+    const r = await fetch(optoOn ? '/opto-stop' : '/opto-test', { method: 'POST' }).catch(() => null);
+    $('optomsg').textContent = r && !r.ok ? await r.text() : '';
+  };
+  tick();
+</script>
+</body>
+</html>
