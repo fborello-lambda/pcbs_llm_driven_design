@@ -80,7 +80,6 @@ static OPTO_TEST_GEN: AtomicU32 = AtomicU32::new(0);
 static RISE_US: AtomicU32 = AtomicU32::new(0);
 /// Accepted (debounced) ZC level.
 static ZC_HIGH: AtomicBool = AtomicBool::new(false);
-static LAST_EDGE_US: AtomicU32 = AtomicU32::new(0);
 static LAST_ZERO_US: AtomicU32 = AtomicU32::new(0);
 static HALF_US: AtomicU32 = AtomicU32::new(0);
 static WIDTH_US: AtomicU32 = AtomicU32::new(0);
@@ -100,6 +99,10 @@ static WIN_HALF: (AtomicU32, AtomicU32) = (AtomicU32::new(u32::MAX), AtomicU32::
 static ZC_STATS: std::sync::Mutex<String> = std::sync::Mutex::new(String::new());
 static FIRED: AtomicU32 = AtomicU32::new(0);
 static SKIPPED: AtomicU32 = AtomicU32::new(0);
+
+/// The zero crossing the pending firing timer belongs to. A callback that runs after a
+/// newer crossing (a delayed esp_timer task) sees a mismatch and does not fire.
+static TARGET_ZERO_US: AtomicU32 = AtomicU32::new(0);
 
 static FIRE_TIMER: AtomicPtr<sys::esp_timer> = AtomicPtr::new(ptr::null_mut());
 
@@ -133,7 +136,6 @@ fn unlock() {
 /// ZC edge interrupt.
 unsafe extern "C" fn zc_isr(_: *mut c_void) {
     let now = now_us();
-    LAST_EDGE_US.store(now, Relaxed);
     EDGES.fetch_add(1, Relaxed);
 
     let mut ones = 0;
@@ -204,6 +206,7 @@ unsafe extern "C" fn zc_isr(_: *mut c_void) {
             let delay = delay.clamp(MIN_DELAY_US, half - MIN_TAIL_US);
             let elapsed = now.wrapping_sub(zero);
             if delay > elapsed + 100 {
+                TARGET_ZERO_US.store(zero, Relaxed);
                 sys::esp_timer_start_once(FIRE_TIMER.load(Relaxed), (delay - elapsed) as u64);
             } else {
                 SKIPPED.fetch_add(1, Relaxed);
@@ -214,10 +217,12 @@ unsafe extern "C" fn zc_isr(_: *mut c_void) {
 
 /// Firing timer callback (esp_timer task, high priority).
 unsafe extern "C" fn fire_cb(_: *mut c_void) {
-    let since_zero = now_us().wrapping_sub(LAST_ZERO_US.load(Relaxed));
+    let zero = LAST_ZERO_US.load(Relaxed);
+    let since_zero = now_us().wrapping_sub(zero);
     let half = HALF_US.load(Relaxed);
     let fraction = FRACTION.load(Relaxed);
-    if !locked() || fraction == FRACTION_OFF || since_zero + LATE_LIMIT_US > half {
+    let stale = zero != TARGET_ZERO_US.load(Relaxed);
+    if !locked() || fraction == FRACTION_OFF || stale || since_zero > half.saturating_sub(LATE_LIMIT_US) {
         SKIPPED.fetch_add(1, Relaxed);
         return;
     }
@@ -254,6 +259,8 @@ fn set_level(percent: u32) {
             ((lo / std::f64::consts::PI) * 65536.0) as u32
         }
     };
+    // A level change ends the LED test, so the page never shows a test that is not running.
+    stop_opto_test();
     LEVEL.store(percent, Relaxed);
     FRACTION.store(fraction, Relaxed);
     if fraction == FRACTION_OFF {
@@ -312,8 +319,8 @@ fn setup_gpio() -> Result<()> {
 
 fn status_json() -> String {
     let half = HALF_US.load(Relaxed);
-    let since_edge = now_us().wrapping_sub(LAST_EDGE_US.load(Relaxed));
-    let mains = EDGES.load(Relaxed) > 0 && since_edge < ZC_TIMEOUT_US;
+    let since_pulse = now_us().wrapping_sub(LAST_PULSE_US.load(Relaxed));
+    let mains = PULSES.load(Relaxed) > 0 && since_pulse < ZC_TIMEOUT_US;
     let fraction = FRACTION.load(Relaxed);
     let delay_us = match fraction {
         FRACTION_OFF | FRACTION_FULL => 0,
@@ -334,7 +341,10 @@ fn status_json() -> String {
         FIRED.load(Relaxed),
         SKIPPED.load(Relaxed),
         OPTO_TEST_ON.load(Relaxed),
-        ZC_STATS.lock().unwrap(),
+        match ZC_STATS.lock().unwrap().as_str() {
+            "" => "\"zc\":null",
+            stats => stats,
+        },
     )
 }
 
@@ -343,6 +353,9 @@ fn start_opto_test() -> Result<()> {
     let since_pulse = now_us().wrapping_sub(LAST_PULSE_US.load(Relaxed));
     if PULSES.load(Relaxed) > 0 && since_pulse < 1_000_000 {
         bail!("mains detected: the LED test only runs with mains disconnected");
+    }
+    if OPTO_TEST_ON.load(Relaxed) {
+        bail!("the LED test is already running");
     }
     let generation = OPTO_TEST_GEN.fetch_add(1, Relaxed) + 1;
     OPTO_TEST_ON.store(true, Relaxed);
@@ -364,6 +377,13 @@ fn stop_opto_test() {
 }
 
 static INDEX_HTML: &str = include_str!("index.html");
+
+/// Commands must carry `X-Dimmer: 1`. Another web page open on the phone cannot add a
+/// custom header to a cross-origin request without a CORS preflight, which this server
+/// never answers, so it cannot switch the lamp.
+fn from_page(req: &esp_idf_svc::http::server::Request<&mut esp_idf_svc::http::server::EspHttpConnection>) -> bool {
+    req.header("X-Dimmer") == Some("1")
+}
 
 fn main() -> Result<()> {
     esp_idf_svc::sys::link_patches();
@@ -416,6 +436,9 @@ fn main() -> Result<()> {
     })?;
     // POST /level?p=0..100
     server.fn_handler("/level", Method::Post, |req| {
+        if !from_page(&req) {
+            return req.into_status_response(403)?.write_all(b"missing X-Dimmer header");
+        }
         let query = req.uri().split_once('?').map_or("", |(_, q)| q);
         let level = query.split('&').find_map(|kv| kv.strip_prefix("p=")).and_then(|v| v.parse::<u32>().ok());
         match level {
@@ -426,9 +449,14 @@ fn main() -> Result<()> {
             _ => req.into_status_response(400)?.write_all(b"expected p=0..100"),
         }
     })?;
-    server.fn_handler("/opto-test", Method::Post, |req| match start_opto_test() {
-        Ok(()) => req.into_ok_response()?.write_all(b"ok"),
-        Err(e) => req.into_status_response(409)?.write_all(e.to_string().as_bytes()),
+    server.fn_handler("/opto-test", Method::Post, |req| {
+        if !from_page(&req) {
+            return req.into_status_response(403)?.write_all(b"missing X-Dimmer header");
+        }
+        match start_opto_test() {
+            Ok(()) => req.into_ok_response()?.write_all(b"ok"),
+            Err(e) => req.into_status_response(409)?.write_all(e.to_string().as_bytes()),
+        }
     })?;
     server.fn_handler("/opto-stop", Method::Post, |req| {
         stop_opto_test();
@@ -441,7 +469,8 @@ fn main() -> Result<()> {
     let mut counts = [0u32; 5];
     loop {
         let now = now_us();
-        if locked() && now.wrapping_sub(LAST_EDGE_US.load(Relaxed)) > ZC_TIMEOUT_US {
+        // Judged on real pulses: noise edges alone must not keep the lock alive.
+        if locked() && now.wrapping_sub(LAST_PULSE_US.load(Relaxed)) > ZC_TIMEOUT_US {
             unlock();
             info!("zero-cross lost: firing stopped");
         }

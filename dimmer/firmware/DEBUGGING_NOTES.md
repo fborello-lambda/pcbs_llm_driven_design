@@ -19,10 +19,10 @@ The board panicked during start-up, rebooted, and did it again, forever. The fix
 
 ## How the search went
 
-1. **Antenna.** The laptop could not see the network, so the TX power was capped at 8.5 dBm, a known SuperMini workaround. This may or may not have mattered; the phone already saw the network on the laptop before the change.
+1. **Antenna.** The laptop could not see the network, so the TX power was capped at 8.5 dBm, a known SuperMini workaround. It is unclear whether this mattered: the phone could already join the network while the board was on the laptop.
 2. **Charger power.** A brownout from a weak charger was assumed next. A boot/heartbeat LED was added, and the start-up TX power was lowered.
 3. **USB data lines.** Then a chip reset from the charger's D+/D- signalling. The LED was made to blink the reset reason.
-4. **Evidence.** Only then was a reset log written to flash. It showed `4/1`: a *panic* during start-up, not a power or USB reset. One more flash to save the panic message gave the answer immediately.
+4. **Evidence.** Only then was a temporary reset log written to flash (removed afterwards). It showed `4/1`: a *panic* during start-up, not a power or USB reset. One more flash to save the panic message gave the answer immediately.
 
 ## What should have happened
 

@@ -52,6 +52,7 @@
       <button data-p="0">Off</button><button data-p="25">25</button><button data-p="50">50</button>
       <button data-p="75">75</button><button data-p="100">Full</button>
     </div>
+    <p class="small bad" id="senderr"></p>
     <p class="small">Firing only starts once the zero crossing is locked. The lamp is always off after a reset.</p>
   </div>
 
@@ -70,7 +71,7 @@
       <div>Pulse width min–max</div><div><span id="zwidth">–</span> µs</div>
       <div>Half-period min–max</div><div><span id="zhalf">–</span> µs</div>
     </div>
-    <p class="small">At 50 Hz expect 200 edges, 100 pulses, 0 invalid, a width of tens of µs and a half-period near 10000 µs.</p>
+    <p class="small">At 50 Hz expect 100 pulses, at least 200 edges (more with noise), 0 invalid, a width of tens of µs and a half-period near 10000 µs.</p>
   </div>
 
   <div class="card">
@@ -95,9 +96,16 @@
   const $ = (id) => document.getElementById(id);
   let dragging = false, sendTimer = null;
 
+  const post = (url) => fetch(url, { method: 'POST', headers: { 'X-Dimmer': '1' } });
+
   function send(p) {
     clearTimeout(sendTimer);
-    sendTimer = setTimeout(() => fetch('/level?p=' + p, { method: 'POST' }).catch(() => {}), 120);
+    sendTimer = setTimeout(async () => {
+      const r = await post('/level?p=' + p).catch(() => null);
+      // On failure show it and fall back to the board's real level at the next poll.
+      $('senderr').textContent = r && r.ok ? '' : 'Not sent: check the Wi-Fi connection. The level shown is the board\'s real level.';
+      if (!(r && r.ok)) dragging = false;
+    }, 120);
   }
 
   function render(s) {
@@ -105,7 +113,7 @@
     if (!s.mains) { m.className = 'status bad'; m.textContent = 'No mains detected: firing disabled'; }
     else if (!s.locked) { m.className = 'status mid'; m.textContent = 'Mains detected, locking…'; }
     else { m.className = 'status ok'; m.textContent = 'Locked to mains'; }
-    $('level').textContent = s.level;
+    if (!dragging) $('level').textContent = s.level;
     if (!dragging) $('slider').value = s.level;
     $('freq').textContent = s.mains ? s.freq_hz.toFixed(2) : '–';
     $('width').textContent = s.mains ? s.zc_width_us : '–';
@@ -140,12 +148,12 @@
 
   const slider = $('slider');
   slider.addEventListener('pointerdown', () => dragging = true);
-  slider.addEventListener('pointerup', () => dragging = false);
+  for (const ev of ['pointerup', 'pointercancel', 'change']) slider.addEventListener(ev, () => dragging = false);
   slider.addEventListener('input', () => { $('level').textContent = slider.value; send(slider.value); });
   for (const b of document.querySelectorAll('[data-p]')) b.onclick = () => { slider.value = b.dataset.p; send(b.dataset.p); };
   let optoOn = false;
   $('opto').onclick = async () => {
-    const r = await fetch(optoOn ? '/opto-stop' : '/opto-test', { method: 'POST' }).catch(() => null);
+    const r = await post(optoOn ? '/opto-stop' : '/opto-test').catch(() => null);
     $('optomsg').textContent = r && !r.ok ? await r.text() : '';
   };
   tick();

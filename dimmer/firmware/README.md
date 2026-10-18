@@ -8,7 +8,7 @@ Rust (ESP-IDF `std`) phase-control firmware for the 220 Vac halogen dimmer, cont
 
 - **Zero-cross (ZC, GPIO3):** the H11AA1 output is low while the mains voltage is high and pulses high around each zero crossing. The firmware takes the middle of each pulse as the true zero crossing, so the opto delay cancels out. The design estimate was about 2.2 ms, but on the first board the pulses are only **30–100 µs** wide; any width from 10 µs to 5 ms is accepted.
 - **Noise filter:** GPIO3 has only the weak internal pull-up, so its edges are slow and noisy (about 70–100 false edges per second on the first board). After each edge the line is sampled four times over about 8 µs, and the edge is ignored if the level did not really change.
-- **Lock:** firing starts only after 8 valid half-cycles in a row. Valid means 40–62.5 Hz and a pulse narrower than 5 ms. A single missed pulse (a gap of exactly two half-cycles) keeps the lock, because the crossing that ends it is real. Any other bad crossing stops firing at once; no edge for 30 ms counts as mains lost.
+- **Lock:** firing starts only after 8 valid half-cycles in a row. Valid means 40–62.5 Hz and a pulse narrower than 5 ms. A single missed pulse (a gap of about two half-cycles) keeps the lock, because the crossing that ends it is real. Any other bad crossing stops firing at once; no edge for 30 ms counts as mains lost.
 - **Firing (FIRE, GPIO4):** a 150 µs pulse to the MOC3052 at the delay that gives the requested **power** (not phase angle), using P = 1 − α/π + sin(2α)/(2π). 50 % power fires 5.0 ms after the crossing, 10 % at 7.4 ms. The delay is limited to 1.4–8.5 ms, so 99 % becomes 98.3 % and 1 % becomes 2 %. 100 % holds FIRE high (full on); 0 % never fires.
 - **Never late:** a pulse that would land less than 1 ms before the next crossing is skipped and counted, so a delayed pulse can never turn on the following half-cycle.
 - **Off at boot:** the level is not stored. Wi-Fi runs without NVS, so nothing is written to flash while the lamp runs.
@@ -37,7 +37,7 @@ The board creates the Wi-Fi network `esp32-dimmer` (password `dimmer-lab`). Open
 - the expected lamp voltage for a true-RMS meter: V<sub>lamp</sub> = V<sub>in</sub> × √(power);
 - an optocoupler LED test (mains disconnected only).
 
-`GET /status` returns the same data as JSON; `POST /level?p=0..100` sets the power.
+`GET /status` returns the same data as JSON; `POST /level?p=0..100` sets the power. Commands need the header `X-Dimmer: 1`, so another web page open on the phone cannot switch the lamp.
 
 ## Bring-up and testing
 
