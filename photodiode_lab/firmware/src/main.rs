@@ -14,6 +14,7 @@ use std::thread;
 use std::time::Duration;
 
 use anyhow::{anyhow, Result};
+use log::{info, warn};
 use esp_idf_svc::eventloop::EspSystemEventLoop;
 use esp_idf_svc::hal::adc::attenuation::{self, adc_atten_t};
 use esp_idf_svc::hal::adc::oneshot::config::{AdcChannelConfig, Calibration};
@@ -57,6 +58,8 @@ struct Reading {
 
 fn main() -> Result<()> {
     esp_idf_svc::sys::link_patches();
+    // Log with `info!`, never `println!`: without a USB host the USB serial console
+    // returns an error, and `println!` panics on it (a reset loop on a phone charger).
     esp_idf_svc::log::EspLogger::initialize_default();
 
     let peripherals = Peripherals::take()?;
@@ -130,7 +133,7 @@ fn main() -> Result<()> {
                 calibration: Calibration::Curve,
             },
         )?;
-        println!("attenuation {name} dB");
+        info!("attenuation {name} dB");
 
         while requested.load(Ordering::Relaxed) == atten {
             // A failed conversion is logged and skipped so Wi-Fi and the page keep running.
@@ -154,9 +157,9 @@ fn main() -> Result<()> {
             match read() {
                 Ok(reading) => {
                     *latest.lock().unwrap() = reading;
-                    println!("{}", to_json(reading));
+                    info!("{}", to_json(reading));
                 }
-                Err(e) => println!("ADC read failed: {e}"),
+                Err(e) => warn!("ADC read failed: {e}"),
             }
             thread::sleep(READING_PERIOD);
         }
@@ -193,7 +196,7 @@ fn start_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> Result<()> {
             wifi.connect()?;
             wifi.wait_netif_up()?;
             let ip = wifi.wifi().sta_netif().get_ip_info()?.ip;
-            println!("Joined `{ssid}`: open http://{ip}");
+            info!("Joined `{ssid}`: open http://{ip}");
         }
         (None, _) => {
             wifi.set_configuration(&Configuration::AccessPoint(AccessPointConfiguration {
@@ -207,7 +210,7 @@ fn start_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> Result<()> {
             wifi.start()?;
             wifi.wait_netif_up()?;
             let ip = wifi.wifi().ap_netif().get_ip_info()?.ip;
-            println!("Access point `{AP_SSID}` (password `{AP_PASS}`): open http://{ip}");
+            info!("Access point `{AP_SSID}` (password `{AP_PASS}`): open http://{ip}");
         }
     }
     Ok(())

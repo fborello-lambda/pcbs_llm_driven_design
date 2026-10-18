@@ -37,7 +37,7 @@ The board panicked during start-up, rebooted, and did it again, forever. The fix
 - The blue LED shows three quick flashes at boot and one short flash per second when Wi-Fi is up, so the state is visible without a cable.
 - The Wi-Fi TX power stays capped (8.5 dBm, 10 dBm at start-up); it is enough for a phone in the same room.
 
-The photodiode lab and remote controller firmware also use `println!` and carry the same latent bug.
+The photodiode lab and remote controller firmware had the same latent bug and now log with `log::info!` too.
 
 ## Second bug: trusting the design estimate
 
