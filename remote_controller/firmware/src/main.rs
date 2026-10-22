@@ -13,6 +13,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use anyhow::{anyhow, Result};
+use log::info;
 use embedded_graphics::mono_font::ascii::FONT_6X10;
 use embedded_graphics::mono_font::MonoTextStyle;
 use embedded_graphics::pixelcolor::BinaryColor;
@@ -199,7 +200,7 @@ fn calibrate<DI: WriteOnlyDataCommand>(
     }
     x_axis.finish();
     y_axis.finish();
-    println!(
+    info!(
         "calibrated: horizontal {:.0}/{:.0}/{:.0} mV, vertical {:.0}/{:.0}/{:.0} mV (low/centre/high)",
         x_axis.low, x_axis.center, x_axis.high, y_axis.low, y_axis.center, y_axis.high
     );
@@ -209,6 +210,8 @@ fn calibrate<DI: WriteOnlyDataCommand>(
 
 fn main() -> Result<()> {
     esp_idf_svc::sys::link_patches();
+    // Log with `info!`, never `println!`: without a USB host the USB serial console
+    // returns an error, and `println!` panics on it (a reset loop on a phone charger).
     esp_idf_svc::log::EspLogger::initialize_default();
 
     let p = Peripherals::take()?;

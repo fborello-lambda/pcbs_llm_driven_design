@@ -1,6 +1,6 @@
 # Photodiode lab firmware
 
-Rust (ESP-IDF `std`) firmware for the photodiode lab board. It reads `ADC_OUT` on GPIO0 (ADC1 channel 0, curve-fitting calibration), averages 32 samples every 200 ms, prints a JSON line on the serial console, and serves a phone-friendly page with:
+Rust (ESP-IDF `std`) firmware for the photodiode lab board. It reads `ADC_OUT` on GPIO0 (ADC1 channel 0, curve-fitting calibration), averages 32 samples every 200 ms, logs a JSON line on the serial console (after the ESP-IDF log prefix), and serves a phone-friendly page with:
 
 - the ADC voltage, raw counts and noise;
 - buttons to change the ADC attenuation (0, 2.5, 6 or 12 dB) while running; it starts at 12 dB after every reset;
